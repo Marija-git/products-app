@@ -4,9 +4,8 @@ namespace ProductsApp.Data.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepository<Product> Products { get; }
-        IRepository<Category> Categories { get; }
-
+        IProductRepository Products { get; }
+        ICategoryRepository Categories { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

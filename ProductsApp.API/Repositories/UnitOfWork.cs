@@ -9,19 +9,17 @@ namespace ProductsApp.API.Repositories
     {
         private readonly ProductsDbContext _context;
         private IDbContextTransaction _transaction;
-
-        private IRepository<Product> _products;
-        private IRepository<Category> _categories;
-
+        private IProductRepository _products;
+        private ICategoryRepository _categories;
 
         public UnitOfWork(ProductsDbContext context)
         {
             _context = context;
         }
 
+        public IProductRepository Products => _products ??= new ProductRepository(_context);
 
-        public IRepository<Product> Products => _products ??= new Repository<Product>(_context);
-        public IRepository<Category> Categories => _categories ??= new Repository<Category>(_context);
+        public ICategoryRepository Categories => _categories ??= new CategoryRepository(_context);
 
 
         public async Task BeginTransactionAsync()
