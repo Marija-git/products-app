@@ -16,5 +16,6 @@ namespace ProductsApp.API.Services
         Task<ProductDtoResponse> GetByIdWithCategoriesAsync(int id);
         Task<IEnumerable<ProductDtoResponse>> GetAllWithCategoriesAsync();
         Task RemoveProductAsync(int productId);
+        Task<ProductDtoResponse> UpdateAsync(int id, ProductDtoRequest dto);
     }
 }

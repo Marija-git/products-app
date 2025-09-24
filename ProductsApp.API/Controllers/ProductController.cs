@@ -50,5 +50,12 @@ namespace ProductsApp.API.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProductDtoResponse>> UpdateProduct(int id, [FromBody] ProductDtoRequest dto)
+        {
+            var updatedProduct = await _productService.UpdateAsync(id, dto);
+            return Ok(updatedProduct);
+        }
+
     }
 }

@@ -68,6 +68,43 @@ namespace ProductsApp.API.Services
 
         }
 
+        public async Task<ProductDtoResponse> UpdateAsync(int id, ProductDtoRequest dto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var existingProduct = await _unitOfWork.Products.GetByIdWithIncludesAsync(id);
+                if (existingProduct == null)
+                    throw new KeyNotFoundException($"Product with ID {id} not found.");
+
+                _mapper.Map(dto, existingProduct);
+                _unitOfWork.Products.Update(existingProduct);
+                await _unitOfWork.SaveChangesAsync();
+
+                if (dto.CategoryIds != null)
+                {
+                    var allCategories = await _unitOfWork.Categories.GetAllAsync();
+                    existingProduct.Categories = allCategories
+                        .Where(c => dto.CategoryIds.Contains(c.CategoryId))
+                        .ToList();
+
+                    _unitOfWork.Products.Update(existingProduct);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                await _unitOfWork.CommitTransactionAsync();
+
+                var updatedProduct = await _unitOfWork.Products.GetByIdWithIncludesAsync(id);
+                return _mapper.Map<ProductDtoResponse>(updatedProduct);
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
+
         public async Task RemoveProductAsync(int productId)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productId);
